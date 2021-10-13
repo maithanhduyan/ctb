@@ -1,0 +1,26 @@
+{
+  "name": "ctb",
+  "version": "1.0.0",
+  "description": "ctb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maithanhduyan/ctb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maithanhduyan/ctb/issues"
+  },
+  "homepage": "https://github.com/maithanhduyan/ctb#readme",
+  "dependencies": {
+    "ccxt": "^1.58.6",
+    "delay": "^5.0.0",
+    "dotenv": "^10.0.0",
+    "moment": "^2.29.1"
+  }
+}
