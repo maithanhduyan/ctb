@@ -63,7 +63,7 @@ async function tick() {
 async function main() {
   while (true) {
     await tick();
-    await delay(60 * 1000);
+    await delay(3 * 1000);
   }
 }
 

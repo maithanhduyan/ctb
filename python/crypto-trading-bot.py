@@ -1,20 +1,21 @@
+import time
+from datetime import datetime
+import numpy as np
+import warnings
 import ccxt
 import config
 import schedule
 import pandas as pd
 pd.set_option('display.max_rows', None)
 
-import warnings
 warnings.filterwarnings('ignore')
 
-import numpy as np
-from datetime import datetime
-import time
 
 exchange = ccxt.binanceus({
     "apiKey": config.BINANCE_API_KEY,
     "secret": config.BINANCE_SECRET_KEY
 })
+
 
 def tr(data):
     data['previous_close'] = data['close'].shift(1)
@@ -26,11 +27,13 @@ def tr(data):
 
     return tr
 
+
 def atr(data, period):
     data['tr'] = tr(data)
     atr = data['tr'].rolling(period).mean()
 
     return atr
+
 
 def supertrend(df, period=7, atr_multiplier=3):
     hl2 = (df['high'] + df['low']) / 2
@@ -54,11 +57,12 @@ def supertrend(df, period=7, atr_multiplier=3):
 
             if not df['in_uptrend'][current] and df['upperband'][current] > df['upperband'][previous]:
                 df['upperband'][current] = df['upperband'][previous]
-        
+
     return df
 
 
 in_position = False
+
 
 def check_buy_sell_signals(df):
     global in_position
@@ -76,7 +80,7 @@ def check_buy_sell_signals(df):
             in_position = True
         else:
             print("already in position, nothing to do")
-    
+
     if df['in_uptrend'][previous_row_index] and not df['in_uptrend'][last_row_index]:
         if in_position:
             print("changed to downtrend, sell")
@@ -86,14 +90,16 @@ def check_buy_sell_signals(df):
         else:
             print("You aren't in position, nothing to sell")
 
+
 def run_bot():
     print(f"Fetching new bars for {datetime.now().isoformat()}")
     bars = exchange.fetch_ohlcv('ETH/USDT', timeframe='1m', limit=100)
-    df = pd.DataFrame(bars[:-1], columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+    df = pd.DataFrame(bars[:-1], columns=['timestamp',
+                      'open', 'high', 'low', 'close', 'volume'])
     df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
 
     supertrend_data = supertrend(df)
-    
+
     check_buy_sell_signals(supertrend_data)
 
 
@@ -102,4 +108,4 @@ schedule.every(10).seconds.do(run_bot)
 
 while True:
     schedule.run_pending()
-    time.sleep(1)
+    time.sleep(10)
