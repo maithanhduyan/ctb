@@ -9,3 +9,20 @@ ctb
 ### LIBRARY
 
 [CCXT](https://www.npmjs.com/package/ccxt)
+
+### .ENV
+
+In .env file
+
+```
+API_KEY=""
+SECRET=""
+```
+
+### Documents
+
+- [Binance docs](https://binance-docs.github.io/apidocs/spot/en/)
+
+### Install Dependencies
+
+> pip install -r requirements.txt
