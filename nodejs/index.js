@@ -1,4 +1,12 @@
 //console.log("Hello World !");
+var connect = require("./db/mysql-socket");
+connect.connect(function (err) {
+  if (err) throw err;
+  connect.query("SELECT * FROM brands", function (err, result, fields) {
+    if (err) throw err;
+    console.log(result);
+  });
+});
 
 const ccxt = require("ccxt");
 const moment = require("moment");
