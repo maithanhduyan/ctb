@@ -25,4 +25,9 @@ SECRET=""
 
 ### Install Dependencies
 
-> pip install -r requirements.txt
+- Python
+
+  > pip install -r requirements.txt
+
+- NodeJS
+  > npm install
