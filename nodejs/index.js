@@ -18,6 +18,7 @@ async function printBalance(btcPrice) {
   console.log(`Total USD: ${(total.BTC - 1) * btcPrice + total.USDT}. \n`);
 }
 
+// Tick
 async function tick() {
   const prices = await binance.fetchOHLCV("BTC/USDT", "1m", undefined, 5);
   const bPrice = prices.map((price) => {
