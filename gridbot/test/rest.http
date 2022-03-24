@@ -1,0 +1,6 @@
+GET https://accounts.binance.com/oauth-api/user-info 
+content-type: application/json
+{
+    "access_token": "YHW7LB52on0JSqEOpUdfBhLFI7d9EqhE9yh9xPqB4VdvdFUoWTI5teJ4AAVgiTcE"
+}
+###
