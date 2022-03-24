@@ -3,20 +3,23 @@
 
 <head>
     <title>CCXT Basic example for the browser</title>
-    <script type="text/javascript" src="https://unpkg.com/ccxt"></script>
-    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ccxt@1.76.66/dist/ccxt.browser.js"></script> -->
+    <script type="text/javascript" src="js/ccxt.browser.js"></script>
     <script type="text/javascript"
         src="https://unpkg.com/lightweight-charts@3.4.0/dist/lightweight-charts.standalone.production.js"></script>
     <script>
 
         document.addEventListener("DOMContentLoaded", async function () {
-            console.log(ccxt.exchanges) // print all available exchanges
+            // console.log(ccxt.exchanges) // print all available exchanges
             try {
-                const exchange = new ccxt.binance({ enableRateLimit: true });
+                const exchange = new ccxt.binance({
+                    enableRateLimit: true,
+                    // apiKey: "YHW7LB52on0JSqEOpUdfBhLFI7d9EqhE9yh9xPqB4VdvdFUoWTI5teJ4AAVgiTcE",
+                    // secret: "4709nIQTy6o4FM7Vy4J3RiYiBPq4Hs91zpt7oGe8hjA4ATvps6b88W8Ow5368jIF",
+                });
                 const symbol = 'BTC/USDT';
                 const timeframe = '1d'; // 1m , 15m , 1h, 4h , 1d, 1w 
                 const since = undefined;
-                const limit = 10000;
+                const limit = 600;
                 const config = {
                     width: 1200,
                     height: 400,
@@ -40,6 +43,16 @@
                 };
                 const chart = window.LightweightCharts.createChart(document.body, config);
                 const candleSeries = chart.addCandlestickSeries();
+
+                // Load Market Data
+                const response = await exchange.fetchOHLCV(symbol, timeframe, since, limit);
+                const last = response[response.length - 1]
+                const [timestamp, open, high, low, close] = last;
+                const data = response.map(([timestamp, open, high, low, close]) => ({ time: exchange.iso8601(timestamp), open, high, low, close }));
+                candleSeries.setData(data);
+                const price = data[data.length - 1].close;
+                document.title = '' + price;
+
                 // Draw MA High Line
                 const smaHighLine = chart.addLineSeries({
                     color: 'green',
@@ -53,30 +66,20 @@
                 // MA Length
                 const ma_length = 30;
 
+                // Add SMA
+                var smaHighData = calculateSMA(data, ma_length, 'high');
+                var smaLowData = calculateSMA(data, ma_length, 'low');
+                smaHighLine.setData(smaHighData);
+                smaLowLine.setData(smaLowData);
+
+                // Loop
                 while (true) {
                     try {
-                        const response = await exchange.fetchOHLCV(symbol, timeframe, since, limit);
-                        const last = response[response.length - 1]
-                        const [timestamp, open, high, low, close] = last;
-                        const data = response.map(([timestamp, open, high, low, close]) => ({ time: exchange.iso8601(timestamp), open, high, low, close }));
-                        candleSeries.setData(data);
-                        const price = data[data.length].tick;
-                        document.title = '' + price;
-                        console.log('');
-                        // Add SMA
-                        var smaHighData = calculateSMA(data, ma_length, 'high');
-                        var smaLowData = calculateSMA(data, ma_length, 'low');
-                        smaHighLine.setData(smaHighData);
-                        smaLowLine.setData(smaLowData);
-
-
                     } catch (e) {
                         console.log(e.constructor.name, e.message);
                     }
-
-                    await exchange.sleep(10);
+                    await exchange.sleep(1000); // 1000  = 1 second
                 }
-
 
             } catch (e) {
                 alert(e.constructor.name + ' ' + e.message);

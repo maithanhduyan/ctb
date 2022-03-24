@@ -3,6 +3,7 @@ const moment = require("moment");
 const delay = require("delay");
 require("dotenv").config();
 
+// Initial
 const binance = new ccxt.binance({
   apiKey: process.env.API_KEY,
   secret: process.env.SECRET,
