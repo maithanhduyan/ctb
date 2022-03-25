@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     //   console.log("Open");
     var data = {
       method: "SUBSCRIBE",
-      params: ["btcusdt@aggTrade"],
+      params: ["btcusdt@kline_1d"],
       id: 1,
     };
 
@@ -75,10 +75,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (elements.length > 10) {
       quotesElement.removeChild(elements[0]);
     }
-
+    // console.log(data);
     // Update price on chart
     if (currentBar.time != null) {
-      currentBar.close = data.p;
+      currentBar.open = data.k.o;
+      currentBar.close = data.k.c;
+      currentBar.high = data.k.h;
+      currentBar.low = data.k.l;
+      console.log(data.k.c);
+      document.title = currentBar.close;
       candleSeries.update(currentBar);
     }
   };
@@ -87,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const symbol = "BTC/USDT";
   const timeframe = "1d"; // timeframe: 1m , 15m , 1h, 4h , 1d, 1w
   const since = undefined;
-  const limit = 600; // number of candles
+  const limit = 1600; // number of candles
   const config = {
     width: 1200,
     height: 400,
@@ -169,6 +174,24 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Loop
     while (true) {
       try {
+        // tick
+        // const response = await exchange.fetchOHLCV(symbol, timeframe, since, 1);
+        // const last = response[response.length - 1];
+        // const [timestamp, open, high, low, close] = last;
+        // const data = response.map(([timestamp, open, high, low, close]) => ({
+        //   time: exchange.iso8601(timestamp),
+        //   open,
+        //   high,
+        //   low,
+        //   close,
+        // }));
+        // currentBar.time = data[0].time;
+        // currentBar.open = data[0].open;
+        // currentBar.close = data[0].close;
+        // currentBar.high = data[0].high;
+        // currentBar.low = data[0].low;
+        // console.log(currentBar);
+        // candleSeries.update(currentBar);
       } catch (e) {
         console.log(e.constructor.name, e.message);
       }
