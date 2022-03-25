@@ -3,6 +3,7 @@ const moment = require("moment");
 const delay = require("delay");
 require("dotenv").config();
 
+// Initial
 const binance = new ccxt.binance({
   apiKey: process.env.API_KEY,
   secret: process.env.SECRET,
@@ -18,6 +19,7 @@ async function printBalance(btcPrice) {
   console.log(`Total USD: ${(total.BTC - 1) * btcPrice + total.USDT}. \n`);
 }
 
+// Tick
 async function tick() {
   const prices = await binance.fetchOHLCV("BTC/USDT", "1m", undefined, 5);
   const bPrice = prices.map((price) => {
