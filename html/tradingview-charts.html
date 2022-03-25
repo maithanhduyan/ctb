@@ -4,130 +4,24 @@
 <head>
     <title>CCXT Basic example for the browser</title>
     <script type="text/javascript" src="js/ccxt.browser.js"></script>
-    <script type="text/javascript"
-        src="https://unpkg.com/lightweight-charts@3.4.0/dist/lightweight-charts.standalone.production.js"></script>
-    <script>
-
-        document.addEventListener("DOMContentLoaded", async function () {
-            // console.log(ccxt.exchanges) // print all available exchanges
-            try {
-                const exchange = new ccxt.binance({
-                    enableRateLimit: true,
-                    // apiKey: "YHW7LB52on0JSqEOpUdfBhLFI7d9EqhE9yh9xPqB4VdvdFUoWTI5teJ4AAVgiTcE",
-                    // secret: "4709nIQTy6o4FM7Vy4J3RiYiBPq4Hs91zpt7oGe8hjA4ATvps6b88W8Ow5368jIF",
-                });
-                const symbol = 'BTC/USDT';
-                const timeframe = '1d'; // 1m , 15m , 1h, 4h , 1d, 1w 
-                const since = undefined;
-                const limit = 600;
-                const config = {
-                    width: 1200,
-                    height: 400,
-                    priceScale: {
-                        position: 'right',
-                        mode: 1,
-                        autoScale: true,
-                        invertScale: false,
-                    },
-                    timeScale: {
-                        fixLeftEdge: true,
-                        lockVisibleTimeRangeOnResize: true,
-                        rightBarStaysOnScroll: true,
-                        visible: true,
-                        timeVisible: true,
-                        secondsVisible: true,
-                    },
-                    crosshair: {
-                        mode: window.LightweightCharts.CrosshairMode.Normal,
-                    },
-                };
-                const chart = window.LightweightCharts.createChart(document.body, config);
-                const candleSeries = chart.addCandlestickSeries();
-
-                // Load Market Data
-                const response = await exchange.fetchOHLCV(symbol, timeframe, since, limit);
-                const last = response[response.length - 1]
-                const [timestamp, open, high, low, close] = last;
-                const data = response.map(([timestamp, open, high, low, close]) => ({ time: exchange.iso8601(timestamp), open, high, low, close }));
-                candleSeries.setData(data);
-                const price = data[data.length - 1].close;
-                document.title = '' + price;
-
-                // Draw MA High Line
-                const smaHighLine = chart.addLineSeries({
-                    color: 'green',
-                    lineWidth: 1,
-                });
-                // Draw MA Low Line
-                const smaLowLine = chart.addLineSeries({
-                    color: 'red',
-                    lineWidth: 1,
-                });
-                // MA Length
-                const ma_length = 30;
-
-                // Add SMA
-                var smaHighData = calculateSMA(data, ma_length, 'high');
-                var smaLowData = calculateSMA(data, ma_length, 'low');
-                smaHighLine.setData(smaHighData);
-                smaLowLine.setData(smaLowData);
-
-                // Loop
-                while (true) {
-                    try {
-                    } catch (e) {
-                        console.log(e.constructor.name, e.message);
-                    }
-                    await exchange.sleep(1000); // 1000  = 1 second
-                }
-
-            } catch (e) {
-                alert(e.constructor.name + ' ' + e.message);
-            }
-
-        })
-
-        // SMA Calculate
-        function calculateSMA(data, count, type) {
-            var avg = function (data) {
-                var sum = 0;
-                switch (type) {
-                    case 'open':
-                        for (var i = 0; i < data.length; i++) {
-                            sum += data[i].open;
-                        }
-                        break;
-                    case 'high':
-                        for (var i = 0; i < data.length; i++) {
-                            sum += data[i].high;
-                        }
-                        break;
-                    case 'low':
-                        for (var i = 0; i < data.length; i++) {
-                            sum += data[i].low;
-                        }
-                        break;
-                    case 'close':
-                        for (var i = 0; i < data.length; i++) {
-                            sum += data[i].close;
-                        }
-                        break;
-                }
-
-                return sum / data.length;
-            };
-            var result = [];
-            for (var i = count - 1, len = data.length; i < len; i++) {
-                var val = avg(data.slice(i - count + 1, i));
-                result.push({ time: data[i].time, value: val });
-            }
-            return result;
+    <script type="text/javascript" src="js/lightweight-charts.standalone.production.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <style>
+        .panel {
+            width: 600;
+            height: 240;
+            font-size: 20px;
+            padding: 20px;
+            border: solid lightgreen 1px;
+            background-color: black;
+            color: lightgreen;
         }
-
-    </script>
+    </style>
 </head>
 
 <body>
+    <div id="chart" class="panel"></div>
+    <div id="quotes" class="panel"></div>
 </body>
 
 </html>
